@@ -3,7 +3,6 @@ package com.example.VirtualBank.model.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import java.util.UUID;
 
@@ -23,8 +22,10 @@ public class User {
    @Column(nullable = false,updatable = false,unique = true,columnDefinition = "BINARY(16)")
   //Universally Unique Identifier
     private UUID userId;
-   @UniqueElements
+    
+    @Column(unique = true, nullable = false)
     private String username;
+    
     @Email
     @Column(unique = true,nullable = false)
     private String email;
