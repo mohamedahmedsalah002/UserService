@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class UserEventConsumer implements BaseConsumer {
-    
+
 
     @KafkaListener(topics = Topics.USER_CREATED, groupId = "user-service-group")
     public void consumeUserCreatedEvent(CreateUserEvent event) {

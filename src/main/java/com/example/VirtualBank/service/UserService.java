@@ -6,6 +6,7 @@ import com.example.VirtualBank.model.dto.UserDto;
 import com.example.VirtualBank.model.entity.User;
 import com.example.VirtualBank.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +18,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserEventProducer eventProducer;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserEventProducer eventProducer) {
+    public UserService(UserRepository userRepository, UserEventProducer eventProducer, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.eventProducer = eventProducer;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -35,6 +38,14 @@ public class UserService {
         }
         
         User user = UserMapper.toEntity(userDto);
+        
+        // Hash the password before saving
+        if (user.getPassword() != null) {
+            String hashedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(hashedPassword);
+            log.info("Password hashed for user: {}", user.getUsername());
+        }
+        
         User savedUser = userRepository.save(user);
         
         // Publish user created event

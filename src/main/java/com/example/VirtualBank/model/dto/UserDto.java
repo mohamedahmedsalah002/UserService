@@ -22,6 +22,8 @@ public class UserDto {
     @Email(message = "Email should be valid")
     private String email;
     
+    private String password;
+    
     private UUID userId;
 }
 

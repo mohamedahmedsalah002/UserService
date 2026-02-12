@@ -50,10 +50,13 @@ return userDto;*/
         if (userDto == null) {
             return null;
         }
-        return User.builder().id(userDto.getId()).userId(userDto.getUserId()).username(userDto.getUsername()).email(userDto.getEmail()).build();
-        // Note: Don't map password, createdAt, updatedAt from DTO
-        // Password should be handled separately with encryption
-        // createdAt/updatedAt are auto-managed by JPA
+        return User.builder()
+                .id(userDto.getId())
+                .userId(userDto.getUserId())
+                .username(userDto.getUsername())
+                .email(userDto.getEmail())
+                .password(userDto.getPassword())
+                .build();
     }
     // Convert List of DTOs to List of Entities
     public static List<User> toEntityList(List<UserDto> userDtoList) {
