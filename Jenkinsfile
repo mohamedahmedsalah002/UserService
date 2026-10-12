@@ -1,8 +1,14 @@
+
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9-eclipse-temurin-21'
+            args '-v $HOME/.m2:/root/.m2'
+        }
+    }
 
     environment {
-        DOCKER_IMAGE = "moosalah02/vr-user-service"  // Change for each service
+        DOCKER_IMAGE = 'moosalah02/vr-user-service'
         TAG = "${BUILD_NUMBER}"
     }
 
@@ -15,6 +21,7 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
+                sh 'mvn -version'
                 sh 'mvn clean package -DskipTests'
             }
         }
@@ -25,7 +32,8 @@ pipeline {
             }
             post {
                 always {
-                    junit '**/target/surefire-reports/*.xml'
+                    junit allowEmptyResults: true,
+                          testResults: '**/target/surefire-reports/*.xml'
                 }
             }
         }
@@ -42,7 +50,10 @@ pipeline {
         stage('Docker Push') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                    docker.withRegistry(
+                        'https://index.docker.io/v1/',
+                        'docker-hub-credentials'
+                    ) {
                         docker.image("${DOCKER_IMAGE}:${TAG}").push()
                         docker.image("${DOCKER_IMAGE}:latest").push()
                     }
@@ -56,7 +67,7 @@ pipeline {
             echo "Successfully built and pushed ${DOCKER_IMAGE}:${TAG}"
         }
         failure {
-            echo "❌ Pipeline failed"
+            echo 'Pipeline failed. Check the console output.'
         }
     }
 }
